@@ -8,11 +8,14 @@ package at.fhooe.ai.rushhour;
  */
 public class BlockingHeuristic implements Heuristic {
 
+  private Puzzle puzzle;
+
   /**
    * This is the required constructor, which must be of the given form.
    */
   public BlockingHeuristic(Puzzle puzzle) {
     // TODO
+    this.puzzle = puzzle;
   }
 
   /**
@@ -20,7 +23,36 @@ public class BlockingHeuristic implements Heuristic {
    */
   public int getValue(State state) {
     // TODO
-    return 0;
+    if (state.isGoal()) {
+      return 0;
+    }
+
+    int gridSize = puzzle.getGridSize();
+
+    // red car info
+    int redRow = puzzle.getFixedPosition(0);
+    int redPos = state.getVariablePosition(0);
+    int redSize = puzzle.getCarSize(0);
+
+    // count blocking cars
+    int blockingCars = 0;
+
+    // check all cells right of the red car
+    for (int x = redPos + redSize; x < gridSize; x++) {
+        int [][] grid = state.getGrid();
+        int v = grid[x][redRow];
+
+        if (v != -1 && v != 0) {
+          blockingCars++;
+        }
+    }
+
+    return 1 + blockingCars;
+  }
+
+  @Override
+  public String getName() {
+    return "BlockingHeuristic";
   }
 
 }

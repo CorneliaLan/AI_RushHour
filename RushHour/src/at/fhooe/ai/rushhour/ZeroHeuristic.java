@@ -19,4 +19,9 @@ public class ZeroHeuristic implements Heuristic {
     return 0;
   }
 
+  @Override
+  public String getName() {
+    return "ZeroHeuristic";
+  }
+
 }

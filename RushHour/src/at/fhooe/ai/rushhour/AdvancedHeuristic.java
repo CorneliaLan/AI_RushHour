@@ -76,7 +76,7 @@ public class AdvancedHeuristic implements Heuristic {
         }
 
         // 4. final heuristic (SAFE combination)
-        return distance + blockers.size() + secondary.size() / 2;
+        return 1 + blockers.size() + secondary.size() / 2;
     }
 
     @Override

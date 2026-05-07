@@ -1,0 +1,82 @@
+Idee der AdvancedHeuristic
+
+Die AdvancedHeuristic erweitert die einfache BlockingHeuristic.
+
+Sie betrachtet nicht nur welche Autos direkt den Weg blockieren, sondern zusätzlich ob diese blockierenden Autos selbst wieder eingeschränkt sind.
+
+Die Heuristik versucht also „schwierige“ Blockierer stärker zu bewerten, ohne zu aggressiv zu werden.
+
+Dadurch bleibt sie relativ sicher, näher an admissible/consistent, aber informativer als die normale BlockingHeuristic.
+
+Grundidee der Berechnung
+
+Die Heuristik besteht aus drei Teilen:
+
+Distanz des roten Autos zum Ausgang
+direkte Blockierer
+einfache sekundäre Blockierer („Blockierer von Blockierern“)
+
+Am Ende wird alles kombiniert.
+
+
+Konstruktor: Hier wird wieder das Puzzle gespeichert, damit später auf Spielfeldinformationen zugegriffen werden kann.
+
+Goal-Test (state.isGoal): Wenn der Zustand bereits gelöst ist werden keine weiteren Züge benötigt, deshalb ist die Heuristik 0.
+
+Spielfeldgröße holen (gridSize): Hier werden Spielfeldgröße und aktuelles Grid geladen.
+
+Informationen über das rote Auto: Das rote Auto hat immer die ID 0.
+
+Hier werden geholt: seine fixe Zeile (redRow), seine aktuelle Position (redPos), seine Länge (redSize)
+
+Damit weiß man: wo das rote Auto gerade steh und ab welcher Position man nach Blockierern suchen muss.
+
+1. Distanz zum Ausgang (distance): Dieser Wert berechnet wie viele Felder das rote Auto noch bis zum Ausgang fahren müsste, wenn der Weg komplett frei wäre. Das ist eine sichere Untergrenze (lower bound). (theoretisch dann 1, weil man mit einem Zug durchfahren kann)
+
+2. Direkte Blockierer sammeln (blockers): Hier werden alle Autos gespeichert, die direkt vor dem roten Auto stehen.
+Ein Set wird verwendet, damit jedes Auto nur einmal gezählt wird.
+
+Weg zum Ausgang prüfen: Die Schleife läuft vom Ende des roten Autos bis zum Ausgang.
+
+Blockierende Autos erkennen: wenn ein Feld nicht leer ist und nicht zum roten Auto gehört, dann wird das Auto als Blockierer gespeichert.
+
+3. Sekundäre Blockierer bestimmen (secondary): Jetzt betrachtet die Heuristik zusätzlich, ob die direkten Blockierer selbst blockiert werden.
+Das ist die eigentliche Erweiterung gegenüber der BlockingHeuristic.
+
+Direkte Blockierer analysieren (car : blockers): jeder direkte Blockierer wird einzeln untersucht.
+
+Fahrzeuginformationen holen: hier werden Position, Größe und Orientierung des aktuellen Blockierers geladen.
+
+Nur vertikale Autos betrachten: Nur vertikale Fahrzeuge sind relevant, weil sie typischerweise den Weg des roten Autos kreuzen.
+Horizontale Fahrzeuge können meist einfach seitlich bewegt werden und werden deshalb ignoriert.
+
+Freie Bewegungsrichtungen prüfen: Jetzt wird geprüft, ob direkt oberhalb oder unterhalb des Blockierers noch andere Autos stehen.
+
+Oberes Feld prüfen (pos > 0): wenn oberhalb ein anderes Fahrzeug steht, wird dieses als sekundärer Blockierer gezählt.
+Unteres Feld prüfen (pos + size < gridSize): Dasselbe passiert unterhalb des Fahrzeugs.
+
+Sekundäre Blockierer speichern (secondary.add): wenn dort ein anderes Fahrzeug steht, wird es als indirekte Behinderung gespeichert.
+
+
+
+Finale Heuristik (return): Die finale Bewertung kombiniert Distanz zum Ausgang, Anzahl direkter Blockierer, abgeschwächte sekundäre Blockierer.
+Die sekundären Blockierer werden nur halb gewichtet, damit die Heuristik: nicht zu aggressiv wird, admissible möglichst erhalten bleibt und keine extremen Überschätzungen entstehen.
+
+
+
+Warum ist diese Heuristik besser?
+
+Im Vergleich zur BlockingHeuristic erkennt sie schwierigere Situationen, priorisiert problematische Zustände früher, reduziert oft die Anzahl expandierter Knoten deutlich.
+
+Das sieht man auch in euren Ergebnissen häufig deutlich weniger Nodes, oft kleinerer branching factor.
+
+
+Warum gibt es manchmal größere Tiefen?
+
+Die Heuristik ist stärker, aber nicht perfekt konsistent.
+
+Die zusätzlichen sekundären Bewertungen können manche Zustände etwas zu stark bewerten.
+
+Dadurch kann A* manchmal einen anderen Lösungsweg bevorzugen, der minimal länger ist.
+
+Deshalb entstehen gelegentlich Depth 18 statt 17 oder ähnliche kleine Unterschiede.

@@ -1,0 +1,76 @@
+Ziel von A*: möglichst effizient den kürzesten Lösungsweg vom Startzustand zum Zielzustand finden
+
+dabei verwendet A*: die bisherigen Kusten g(n) - wie viele Züge bisher gemacht wurden und die Heuristik h(n) - wie weit der Zustand noch vom Ziel entfernt ist
+
+und berechnet: f(n) = g(n) + h(n)
+
+Der Zustand mit dem kleinsten f(n) wird immer als nächstes untersucht.
+
+Wichtige Datenstrukturen:
+
+OPEN (PriorityQueue) enthält: alle gefundenen, aber noch nicht expandierten Zustände
+
+Die PriorityQueue sortiert automatisch nach g(n) + h(n) - also nach den geschätzten Gesamtkosten.
+Dadurch untersucht A* zuerst die vielversprechendsten Zustände.
+
+CLOSED (HashSet) enthält: alle Zustände, die bereits vollständig expandiert wurden.
+
+Das verhindert unnötige doppelte Arbeit, Schleifen und erneutes Expandieren derselben Zustände.
+
+gScore (HashMap) speichert: die bisher niedrigsten bekannten Kosten zu jedem Zustand.
+Also: State -> minimale Zuganzahl vom Start bis zu diesem State
+
+Beispiel: Zustand A wurde zuerst in 10 Zügen erreicht - später findet A* einen Weg in 7 Zügen - dann wird gScore(A) auf 7 aktualisiert
+Schlechtere Wege werden ignoriert.
+
+Das macht A* effizient und optimal.
+
+
+
+Konstruktor: Start der Suche - führt die gesamte Suche aus.
+
+OPEN wird initialisiert: Die Queue sortiert Nodes nach: depth + heuristic - also g(n) + h(n)
+
+CLOSED und gScore werden initialisiert: CLOSED merkt expandierte States und gScore merkt beste bekannte Kosten
+
+Startzustand wird eingefügt: Startzustand kommt in OPEN und hat Kosten 0
+
+Hauptschleife (!OPEN.isEmpty): A* läuft solange bis ein Ziel gefunden wird oder keine Zustände mehr existieren.
+
+Bester Zustand wird ausgewählt (OPEN.poll): poll nimmt den Zustand mit kleinstem f(n) - also dne aktuell vielversprechendsten Zustand.
+
+Aktuelle Kosten bestimmen (currentG): depth entspricht der bisherigen Anzahl an Zügen - also g(n)
+
+Prüfen, ob dieser Zustand veraltet ist: hier wird geprüft, ob bereits ein besserer Weg zu diesem Zustand bekannt ist; falls ja, wird dieser schlechtere Node ignoriert; das verhindert unnötige Expansionen und doppelte schlechte Wege.
+
+Goal-Test (currentState.isGoal): wenn das Ziel erreicht wurde, wird der Lösungsweg rekonstruiert und die Suche beendet.
+
+Zustand wird als expandiert markiert (CLOSED.add): jetzt gilt - dieser Zustand wurde vollständig untersucht.
+
+Nachfolger erzeugen (current.expand): hier werden alle möglichen nächsten Spielzüge erzeugt und jeder Nachfolger entspricht einem neuen Puzzle-Zustand.
+
+Jeder Nachfolger wird geprüft: A* untersucht jetzt alle möglichen nächsten Zustände.
+
+Bereits expandierte Zustände werden übersprungen (CLOSED.contains): wenn der Zustand schon vollständig bearbeitet wurde, wird er ignoriert.
+
+Neue Kosten werden berechnet (newG): neue Pfadkosten - Anzahl der Züge bis zu diesem Nachfolger.
+
+Bester bekannter Weg wird geprüft (bestKnown): A* schaut, ob dieser Zustand schon einmal erreicht wurde.
+
+Nur bessere Wege werden akzeptiet (bestKnown == null || newG < bestKnown): nur wenn der Zustand neu ist oder der neue Weg besser ist wird er übernommen.
+
+Neuer bester Weg wird gespeichert (gScore.put): der Zustand wird in OPEN eingefügt und seine besten Kosten gespeichert.
+
+Es wird keine Lösung gefunden (path = null): Falls OPEN leer wird, existiert keine Lösung.
+
+
+
+buildPath(): Diese Methode rekonstruiert den Lösungsweg vom Ziel zurück zum Start.
+
+Wie funktioniert das: Jede Node besitzt einen Parent-Zeiger - dadurch entsteht eine Kette vom Ziel zurück zum Start.
+
+Rückwärts sammeln: man läuft vom Ziel über alle Elternknoten zurück zum Start.
+
+Reihenfolge umdrehen (Collections.reverse): da der Weg rückwärts gesammelt wurde, wird er umgedreht - dann enthält path[0] den Startzustand.
+
+Warum funktioniert das optimal? Weil die Heuristiken admissible und consistent sind und A* dadurch garantiert optimale Lösungen findet.

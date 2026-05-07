@@ -1,0 +1,111 @@
+           |    ZeroHeuristic      |    BlockingHeuristic  |    AdvancedHeuristic 
+name       |    nodes dpth  br.fac |    nodes dpth  br.fac |    nodes dpth  br.fac
+-----------+-----------------------+-----------------------+----------------------
+Jam-1      |    11608    8   3,067 |     6892    8   2,861 |     6277    8   2,825
+Jam-2      |    28816    8   3,459 |     4918    8   2,734 |     3239    8   2,584
+Jam-3      |     7747   14   1,788 |     4372   14   1,709 |     3998   14   1,697
+Jam-4      |     3227    9   2,304 |     1192    9   2,038 |     1192    9   2,038
+Jam-5      |    21794    9   2,895 |     8263    9   2,580 |     4470    9   2,396
+Jam-6      |    15206    9   2,774 |     6864    9   2,523 |     4087    9   2,370
+Jam-7      |    58361   13   2,221 |    19901   13   2,033 |    19615   13   2,030
+Jam-8      |     6467   12   1,957 |     5784   12   1,938 |     4387   12   1,889
+Jam-9      |     7053   12   1,973 |     3050   12   1,827 |     2707   12   1,807
+Jam-10     |    16298   17   1,677 |    12761   17   1,651 |    12017   17   1,645
+Jam-11     |     6660   25   1,347 |     5781   25   1,338 |     5357   25   1,334
+Jam-12     |    11677   17   1,642 |     5941   17   1,571 |     5124   17   1,556
+Jam-13     |    73151   16   1,924 |    30270   16   1,813 |    26845   16   1,798
+Jam-14     |   101998   17   1,885 |    37287   17   1,769 |    33233   17   1,756
+Jam-15     |     3175   23   1,337 |     3171   23   1,337 |     3157   23   1,337
+Jam-16     |    23225   21   1,535 |    17489   21   1,512 |    16930   21   1,510
+Jam-17     |    19708   24   1,437 |    16631   24   1,426 |    14040   24   1,414
+Jam-18     |    13838   25   1,392 |    12004   25   1,383 |    11112   25   1,378
+Jam-19     |     3653   22   1,368 |     3470   22   1,364 |     3317   22   1,361
+Jam-20     |    12170   10   2,429 |     2822   10   2,072 |     1960   10   1,990
+
+
+nodes = Anzahl der expandierten Zustände/Knoten (je kleiner desto effizienter die Suche)
+
+dpth = Tiefe der gefundenen Lösung (wie viele Züge die Lösung benötigt; wenn zwei Heuristiken dieselbe Tiefe haben, haben beide eine gleich gute (optimale) Lösung gefunden; wenn die Tiefe größer wird, ist die Lösung schlechter/nicht optimal)
+
+br.fac = durchschnittlicher Branching Factor (wie stark sich die Suche verzweigt; kleinerer Wert bedeutet gezieltere Suche, weniger unnötige Pfade)
+
+
+
+Interpretation
+
+ZeroHeuristic
+
+Das ist praktisch: Uniform Cost Search / Breadth-First-artig.
+
+Sie hat extrem viele Nodes, weil keine Information über das Ziel verwendet wird.
+
+Beispiel:
+
+Jam-14:
+101998 nodes
+
+Die Suche ist also sehr „blind“.
+
+
+BlockingHeuristic
+
+Die BlockingHeuristic verbessert das stark.
+
+Warum?
+Weil sie erkennt, welche Autos direkt im Weg stehen.
+
+Dadurch werden unnötige Zustände vermieden.
+
+Beispiel:
+
+Jam-14:
+37287 nodes statt 101998
+
+Das ist bereits eine massive Verbesserung.
+
+
+AdvancedHeuristic
+
+Die AdvancedHeuristic verbessert die Suche nochmals.
+
+Sie berücksichtigt direkte Blockierer plus einfache sekundäre Behinderungen.
+
+Dadurch wird die Suche informierter, ohne zu aggressiv zu werden.
+
+
+Das Wichtigste: gleiche Depth
+
+Das ist der entscheidende Punkt: AdvancedHeuristic findet praktisch überall dieselbe Tiefe wie BlockingHeuristic.
+
+Das bedeutet: die Lösungen bleiben optimal, die Heuristik ist also wahrscheinlich admissible/nahezu consistent genug.
+
+Das ist viel wichtiger als nur wenige Nodes.
+
+
+Gleichzeitig deutlich weniger Nodes
+
+Beispiele:
+
+Jam-5:
+8263 → 4470
+Jam-14:
+37287 → 33233
+Jam-20:
+2822 → 1960
+
+Das zeigt: die Suche wird deutlich effizienter, weil bessere Zustände früher untersucht werden.
+
+
+
+
+Die ZeroHeuristic besitzt keine Zielführung und expandiert daher
+sehr viele Zustände.
+
+Die BlockingHeuristic verbessert die Suche, indem sie direkte
+Blockierer des roten Autos berücksichtigt.
+
+Unsere AdvancedHeuristic erweitert dieses Konzept zusätzlich um
+sekundäre Behinderungen von Blockierern. Dadurch kann A* die
+Suche gezielter steuern und benötigt oft deutlich weniger
+expandierte Knoten, ohne die Qualität der Lösung zu verschlechtern.
+

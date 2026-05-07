@@ -1,0 +1,59 @@
+Idee der BlockingHeuristic
+
+Die BlockingHeuristic schätzt:
+
+wie viele Schritte mindestens noch notwendig sind,
+um das rote Auto zum Ausgang zu bringen.
+
+Die Grundidee:
+
+Das rote Auto kann nur nach rechts zum Ausgang fahren.
+Alle Autos, die davor stehen, müssen zuerst bewegt werden.
+
+Die Heuristik zählt daher:
+
+die blockierenden Autos
+plus 1 für den finalen Zug des roten Autos zum Ausgang.
+
+
+Konstruktor: Hier wird einfach das aktuelle Puzzle gespeichert, damit später auf Informationen wie Gridgröße oder Autopositionen zugegriffen werden kann.
+
+getValue(State state): Diese Methode berechnet den Heuristikwert für einen bestimmten Zustand.
+
+Goal-Test (state.isGoal): Wenn der Zustand bereits gelöst ist werden keine weiteren Züge benötigt, deshalb ist die Heuristik 0.
+
+Spielfeldgröße holen (gridSize): Die Größe des Spielfelds wird benötigt, um später bis zum Ausgang iterieren zu können.
+
+Informationen über das rote Auto: Das rote Auto hat immer die ID 0.
+
+Hier werden geholt: seine fixe Zeile (redRow), seine aktuelle Position (redPos), seine Länge (redSize)
+
+Damit weiß man: wo das rote Auto gerade steh und ab welcher Position man nach Blockierern suchen muss.
+
+Blockierende Autos zählen (blockingCars): Diese Variable zählt wie viele Autos den Weg blockieren.
+
+Weg zum Ausgang prüfen: Die Schleife läuft von direkt hinter dem roten Auto bis zum rechten Spielfeldrand (= Ausgang).
+Es werden also alle Felder überprüft, die das rote Auto noch durchfahren müsste.
+
+Spielfeld lesen ([][] und v): Hier wird geprüft welches Auto sich auf dem aktuellen Feld befindet.
+
+Typischerweise bedeutet:
+-1 → Feld leer
+0 → rotes Auto
+andere Zahl → anderes Fahrzeug
+
+Blockierer erkennen: wenn das Feld nicht leer ist und nicht das rote Auto enthält, dann blockiert dort ein anderes Auto den Weg - dieses Auto wird gezählt.
+
+Heuristikwert zurückgeben (return): Die Heuristik liefert Anzahl der Blockierer, plus 1 für den letzten Zug des roten Autos zum Ausgang.
+
+
+
+
+
+
+
+
+
+
+
+
